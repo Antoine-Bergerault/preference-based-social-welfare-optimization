@@ -10,9 +10,9 @@ x, y = np.mgrid[-4:4:0.1, -4:4:0.1]
 fig = surface(x, y, stack_exchange)
 
 fig.update_layout(
-        title='Welfare function', autosize=False,
-        width=800, height=800,
-        margin=dict(l=80, r=50, b=65, t=90)
+    title='Welfare function', autosize=False,
+    width=800, height=800,
+    margin=dict(l=80, r=50, b=65, t=90)
 )
 
 fig.show()
