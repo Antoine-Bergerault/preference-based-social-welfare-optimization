@@ -32,7 +32,7 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
     
     assert input_dim is not None
     
-    initial_actions = np.array([-1.5, 0])
+    initial_actions = np.array([0] * input_dim)
     
     # define horizon (maximum number of turns)
     T = config.get("horizon", 30)
@@ -48,9 +48,7 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
     
     # quick fix for no initial data
     # TODO: Make sure to do proper initialization instead
-    confidence_set = confidence_set.update(np.array([-3.4, 1.4]), 1)
-    confidence_set = confidence_set.update(np.array([-1, -0.6]), 1)
-    confidence_set = confidence_set.update(np.array([-0.1, -2.3]), 0)
+    confidence_set = confidence_set.update(np.array([-3.4] * input_dim), 1)
     
     reward_type: RewardFunction = retrieve_reward_type(config.get("reward_type", "tw"))
     learning_algorithm: LearningAlgorithm = retrieve_learning_algorithm(config.get("learning_algorithm", "hedge"))
