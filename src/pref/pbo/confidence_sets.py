@@ -4,7 +4,7 @@ from math import log, exp
 from GPy.kern import Linear, Exponential, Matern32
 
 class Ball():
-    def __init__(self, kernel, bound, input_dim, hist_data=None, pref_data=None) -> None:
+    def __init__(self, kernel, bound, epsilon, delta, input_dim, hist_data=None, pref_data=None) -> None:
         assert kernel in ["linear", "exponential", "matern"], f"Unknown kernel type \"{kernel}\""
         
         self._kernel = kernel
@@ -18,6 +18,8 @@ class Ball():
             self._kernel_fun = Matern32(input_dim)
             
         self.bound = bound
+        self.epsilon = epsilon
+        self.delta = delta
         self.input_dim = input_dim
         self.hist_data = hist_data
         self.pref_data = pref_data
@@ -33,7 +35,8 @@ class Ball():
         assert self.hist_data is not None and len(self.hist_data) > 0
         new_hist_data = np.vstack((self.hist_data, np.array(actions)))
         new_pref_data = np.array(preference) if self.pref_data is None else np.vstack((self.pref_data, np.array(preference)))
-        return Ball(self._kernel, self.bound, self.input_dim, new_hist_data, new_pref_data)
+        
+        return Ball(self._kernel, self.bound, self.epsilon, self.delta, self.input_dim, new_hist_data, new_pref_data)
     
     def covering_number(self, epsilon):
         # use approximations found in J (proof of theorem 11)

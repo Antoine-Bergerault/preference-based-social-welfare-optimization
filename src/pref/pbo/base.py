@@ -34,7 +34,8 @@ def compute_MLE_loss(t, pref_hist, K_0t, B, lambda_):
 
     return sol.value(objective)
 
-def beta1(epsilon, delta, t, B, confidence_set):
+def beta1(t, confidence_set):
+    B, epsilon, delta = confidence_set.bound, confidence_set.epsilon, confidence_set.delta
     # equation (7)
     C = 1 + 2/(1 + exp(-2*B))
     return sqrt(32 * t * (B**2) * log(
@@ -54,7 +55,7 @@ def ucb_function(confidence_set: Ball):
     K_0t = k(x_hist, x_hist)
     
     loss_MLE = compute_MLE_loss(t, pref_hist, K_0t, B, lambda_)
-    beta1_t = beta1(0.2, 0.1, t, B, confidence_set)
+    beta1_t = beta1(t, confidence_set)
     def f(x):
         # Implementing equation (21)
         K_x = k(x_hist, np.array([x]))
