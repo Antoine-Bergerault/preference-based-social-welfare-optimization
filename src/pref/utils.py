@@ -1,6 +1,8 @@
 import functools
+import itertools
 from types import SimpleNamespace
 
+import numpy as np
 from numpy import exp
 
 ## Common functions
@@ -13,6 +15,18 @@ def sigmoid(x):
         return 1
     
     return exp(x)/(1 + exp(x))
+
+def maximize(function, input_dim, search_range):
+    argmax = None
+    max = None
+    
+    for pre_image in itertools.product(*np.repeat([search_range], input_dim, axis=0)):
+        reward = function(pre_image)
+        if (max is None) or (reward > max):
+            argmax = np.array(pre_image)
+            max = reward
+
+    return argmax, max
 
 ## Registering and retrieving objects using configuration keywords
 

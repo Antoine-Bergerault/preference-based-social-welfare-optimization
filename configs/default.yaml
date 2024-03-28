@@ -1,5 +1,8 @@
 # @package _global_
 
+defaults:
+  - /utilities_strategy: dc
+
 reward_type: tw
 learning_algorithm: oracle
 
@@ -11,3 +14,5 @@ RKHS_bound: 0.2
 horizon: 30
 epsilon: ${div:1,${horizon}}
 delta: 0.02
+
+learn_utilities: False

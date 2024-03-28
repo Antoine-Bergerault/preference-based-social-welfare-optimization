@@ -1,0 +1,4 @@
+_target_: pref.utilities_strategy.Allocation
+
+type: "linear"
+number_of_resources: 2

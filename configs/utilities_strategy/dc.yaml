@@ -1,0 +1,5 @@
+_target_: pref.utilities_strategy.DCConverter
+
+precision: 3
+period: 10 # 1/sampling frequency
+kernel_type: sinc
