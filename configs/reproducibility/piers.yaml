@@ -1,0 +1,29 @@
+# Online Submodular Resource Allocation with Applications to Rebalancing Shared Mobility Systems
+# https://proceedings.mlr.press/v139/sessa21a.html
+#
+# Main algorithm but with preference feedback
+
+# @package _global_
+
+defaults:
+  - /default
+  - _self_
+  - /utilities_strategy: allocation
+
+utilities_strategy:
+  type: "submodular"
+
+social_welfare_function: beale
+
+reward_type: tw
+learning_algorithm: oracle
+
+kernel_type: matern
+
+RKHS_bound: 20
+
+horizon: 30
+epsilon: ${div:1,${horizon}}
+delta: 0.02
+
+learn_utilities: True

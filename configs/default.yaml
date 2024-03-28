@@ -1,7 +1,8 @@
 # @package _global_
 
 defaults:
-  - /utilities_strategy: dc
+  - /utilities_strategy/dc
+  - _self_
 
 reward_type: tw
 learning_algorithm: oracle

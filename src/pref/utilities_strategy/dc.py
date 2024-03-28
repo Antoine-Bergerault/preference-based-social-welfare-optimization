@@ -4,7 +4,7 @@ from functools import cached_property
 import numpy as np
 
 class DCConverter(Strategy):
-    def __init__(self, precision, period, kernel_type) -> None:
+    def __init__(self, precision, period, kernel_type, **kwargs) -> None:
         super().__init__()
         
         self.precision = precision

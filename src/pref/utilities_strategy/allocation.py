@@ -4,7 +4,7 @@ from functools import cached_property
 import numpy as np
 
 class Allocation(Strategy):
-    def __init__(self, type, number_of_resources) -> None:
+    def __init__(self, type, number_of_resources, **kwargs) -> None:
         super().__init__()
         
         self.type = type
