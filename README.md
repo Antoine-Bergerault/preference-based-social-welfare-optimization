@@ -27,4 +27,12 @@ python app.py -cd configs/experiments --config-name experiment-{number}
 ```
 
 To perform more advanced inspections, you might want to create or use a script in `/scripts`.
+
+## Running tests
+
+We use [pytest](https://docs.pytest.org/en/8.0.x/) as our testing framework.
+
+Run the tests using the following command:
+```
+cd tests && python -m pytest
 ```
