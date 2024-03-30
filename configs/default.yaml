@@ -7,8 +7,8 @@ defaults:
 reward_type: tw
 learning_algorithm: oracle
 
-# Type of the kernel used for Bayesian optimization (linear, exponential or matern)
-kernel_type: linear
+# Type of the kernel used for Bayesian optimization (linear, exponential, gaussian or matern)
+kernel_type: gaussian
 
 RKHS_bound: 0.2
 beta: 2
