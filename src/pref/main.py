@@ -48,9 +48,9 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
 
     confidence_set = Ball(
         kernel=config.get("kernel_type", "linear"),
+        kernel_lengthscale=config.get("kernel_lengthscale", 2),
         bound=config.get("RKHS_bound", 0.2),
-        epsilon=config.get("epsilon", 1/T),
-        delta=config.get("delta", 0.02),
+        beta=config.get("beta", 2),
         input_dim=input_dim
     )
     confidence_set.initial(initial_point)
@@ -80,7 +80,7 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
         
         # run the rational agents
         
-        actions, rewards = learning_algorithm(reward_function, actions_dim)
+        actions, ucb_rewards = learning_algorithm(reward_function, actions_dim)
         
         # measure preference
         
@@ -90,8 +90,9 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
         confidence_set = confidence_set.update(discrete_utilities[0] if learn_utilities else actions, preference)
         
         last_actions = actions
+        rewards = social_welfare(actions)
         
-        yield (s_ucb, actions, rewards, preference)
+        yield (s_ucb, actions, ucb_rewards, rewards, preference)
 
 def pref_social_welfare(config: Union[DictConfig, Dict], generator=False):
     generator_object = pref_social_welfare_generator(config)

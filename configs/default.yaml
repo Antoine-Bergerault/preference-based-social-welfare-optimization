@@ -11,9 +11,8 @@ learning_algorithm: oracle
 kernel_type: linear
 
 RKHS_bound: 0.2
+beta: 2
 
 horizon: 30
-epsilon: ${div:1,${horizon}}
-delta: 0.02
 
 learn_utilities: False

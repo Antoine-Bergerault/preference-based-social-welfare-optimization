@@ -1,23 +1,23 @@
 from pref.pbo.confidence_sets import Ball
 
-from math import sqrt, pi
+from math import sqrt
 import numpy as np
 
 from casadi import Opti, vertcat, DM, dot, log, exp
 
-def loss(z, pref):
+def log_likelihood(z, pref):
     z_1t = z[1:]
     z_0 = z[:-1]
     
     ones = np.ones((z_1t.shape[0], z_1t.shape[1]))
     return dot(z_1t, pref) + dot(z_0, 1 - pref) - dot(ones, log(exp(z_1t) + exp(z_0)))
 
-def compute_MLE_loss(t, pref_hist, K_0t, B, lambda_):
+def compute_MLE_log_likelihood(t, pref_hist, K_0t, B, lambda_):
     opti = Opti()
 
     z_hist = opti.variable(t, 1)
 
-    objective = loss(z_hist, pref_hist)
+    objective = log_likelihood(z_hist, pref_hist)
 
     opti.minimize(-objective) # maximize objective
     
@@ -35,12 +35,8 @@ def compute_MLE_loss(t, pref_hist, K_0t, B, lambda_):
     return sol.value(objective)
 
 def beta1(t, confidence_set):
-    B, epsilon, delta = confidence_set.bound, confidence_set.epsilon, confidence_set.delta
-    # equation (7)
-    C = 1 + 2/(1 + exp(-2*B))
-    return sqrt(32 * t * (B**2) * log(
-        (pi**2 * t**2 * confidence_set.covering_number(epsilon)) / (6 * delta)
-    )) + C * epsilon * t
+    beta = confidence_set.beta
+    return beta * sqrt(t+1)
 
 def ucb_function(confidence_set: Ball):
     x_hist = confidence_set.hist_data
@@ -54,7 +50,7 @@ def ucb_function(confidence_set: Ball):
     k = confidence_set.kernel
     K_0t = k(x_hist, x_hist)
     
-    loss_MLE = compute_MLE_loss(t, pref_hist, K_0t, B, lambda_)
+    log_likelihood_MLE = compute_MLE_log_likelihood(t, pref_hist, K_0t, B, lambda_)
     beta1_t = beta1(t, confidence_set)
     def f(x):
         # Implementing equation (21)
@@ -82,9 +78,7 @@ def ucb_function(confidence_set: Ball):
         
         opti.subject_to(z_plus.T @ matrix_inv @ z_plus <= B**2)
         
-        # in the paper: loss(z_hist, pref_hist) >= loss_MLE - beta1_t
-        # TODO: I don't know why this equation makes sense, any loss should be greater than loss MLE
-        opti.subject_to(loss(z_hist, pref_hist) <= loss_MLE + beta1_t)
+        opti.subject_to(log_likelihood(z_hist, pref_hist) >= log_likelihood_MLE - beta1_t)
 
         # Silent ipopt solver
         opts = {'ipopt.print_level': 0, 'print_time': 0}

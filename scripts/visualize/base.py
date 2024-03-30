@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
     
-def surface(x, y, fun, parallelize=True):
+def surface(x, y, fun, parallelize=True) -> go.FigureWidget:
     assert x.shape == y.shape
     
     if parallelize:
@@ -19,19 +19,17 @@ def surface(x, y, fun, parallelize=True):
     fig.update_traces(contours_z=dict(show=True, usecolormap=True,
                                     highlightcolor="limegreen", project_z=True))
 
-    return fig
+    return go.FigureWidget(fig)
 
-def add_marker(pos, fig):
-    fig.add_trace(
-        go.Scatter3d(
-            x=[pos[0]],
-            y=[pos[1]],
-            z=[pos[2]],
-            mode="markers",
-            marker=dict(
-                color="red",
-                size=10,
-            )
+def add_marker(pos, fig: go.FigureWidget):
+    fig.add_scatter3d(
+        x=[pos[0]],
+        y=[pos[1]],
+        z=[pos[2]],
+        mode="markers",
+        marker=dict(
+            color="red",
+            size=10,
         )
     )
     

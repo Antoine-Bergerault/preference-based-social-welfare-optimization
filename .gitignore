@@ -46,3 +46,4 @@ coverage.xml
 .hydra
 .vscode
 outputs
+scripts/wandb
