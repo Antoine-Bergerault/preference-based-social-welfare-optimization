@@ -10,6 +10,8 @@ defaults:
   - _self_
   - /utilities_strategy: allocation
 
+seed: 42
+
 utilities_strategy:
   type: "submodular"
 

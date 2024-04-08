@@ -1,11 +1,22 @@
 import functools
 import itertools
+import random
 from types import SimpleNamespace
 
 import numpy as np
 from numpy import exp
 
 ## Common functions
+
+def generate_random_seed():
+    return random.randint(0, 2**32 - 1)
+
+def seed_everything(seed):
+    random.seed(seed)
+    
+    # Note: seeding here is only useful when numpy random 
+    # generators are not instantiated in the code
+    np.random.seed(seed)
 
 def sigmoid(x):
     # stable implementation of the sigmoid function

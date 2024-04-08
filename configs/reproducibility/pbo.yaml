@@ -9,6 +9,8 @@ defaults:
   - /default
   - _self_
 
+seed: 42
+
 social_welfare_function: beale
 
 reward_type: tw

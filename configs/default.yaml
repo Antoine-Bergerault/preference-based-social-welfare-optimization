@@ -4,6 +4,8 @@ defaults:
   - /utilities_strategy/dc
   - _self_
 
+seed: ${generate_random_seed:}
+
 reward_type: tw
 learning_algorithm: oracle
 

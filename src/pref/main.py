@@ -2,11 +2,10 @@ from typing import Callable, Dict, Union, Tuple
 from omegaconf import DictConfig, OmegaConf
 from hydra.utils import instantiate
 
-OmegaConf.register_new_resolver('div', lambda x, y: x/y)
-
 import numpy as np
 import numpy.typing as npt
 
+import pref.utils
 from pref.utils import (
     sigmoid,
     maximize,
@@ -25,10 +24,21 @@ Reward = Callable[[Action], float]
 RewardFunction = Callable[Utilities, Callable[Action, Reward]]
 LearningAlgorithm = Callable[[RewardFunction, int], Tuple[Action, Reward]]
 
+OmegaConf.register_new_resolver('div', lambda x, y: x/y)
+OmegaConf.register_new_resolver(
+    "generate_random_seed", pref.utils.generate_random_seed, use_cache=True
+)
+
 def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
     if isinstance(config, dict):
         config = OmegaConf.create(config)
 
+    # Use common seed to allow for reproducibility
+    random_seed = config.get("seed", pref.utils.generate_random_seed())
+    pref.utils.seed_everything(random_seed)
+    
+    numpy_rng = np.random.default_rng(random_seed)
+    
     sw = retrieve_social_welfare_function(config.get("social_welfare_function", "beale"))
     social_welfare, actions_dim = sw.fun, sw.input_dim
     
@@ -85,7 +95,7 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
         # measure preference
         
         probability = sigmoid(social_welfare(actions) - social_welfare(last_actions))
-        preference = np.random.binomial(1, probability)
+        preference = numpy_rng.binomial(1, probability)
         
         confidence_set = confidence_set.update(discrete_utilities[0] if learn_utilities else actions, preference)
         
