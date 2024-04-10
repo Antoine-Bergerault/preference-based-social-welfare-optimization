@@ -3,6 +3,8 @@ from pref import pref_social_welfare
 import random
 import string
 import wandb
+from tqdm import tqdm
+from functools import reduce
 
 hyperparameters = {
     "RKHS_bound": [6, 8, 10],
@@ -30,7 +32,8 @@ baseconfig = {
 
 unique_name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
 
-for params in get_params(hyperparameters):
+number_of_experiments = reduce(lambda a,b: a*b, [len(v) for v in hyperparameters.values()])
+for params in tqdm(get_params(hyperparameters), total=number_of_experiments):
     config = baseconfig | params
 
     assert "social_welfare_function" in config
