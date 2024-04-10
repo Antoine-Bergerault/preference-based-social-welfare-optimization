@@ -8,6 +8,10 @@ from numpy import exp
 
 ## Common functions
 
+# Note: make sure to seed everything to initialize this class attributes
+class Random:
+    numpy_rng = None    
+
 def generate_random_seed():
     return random.randint(0, 2**32 - 1)
 
@@ -17,6 +21,8 @@ def seed_everything(seed):
     # Note: seeding here is only useful when numpy random 
     # generators are not instantiated in the code
     np.random.seed(seed)
+    
+    Random.numpy_rng = np.random.default_rng(seed)
 
 def sigmoid(x):
     # stable implementation of the sigmoid function

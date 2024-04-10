@@ -37,7 +37,7 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
     random_seed = config.get("seed", pref.utils.generate_random_seed())
     pref.utils.seed_everything(random_seed)
     
-    numpy_rng = np.random.default_rng(random_seed)
+    numpy_rng = pref.utils.Random.numpy_rng
     
     sw = retrieve_social_welfare_function(config.get("social_welfare_function", "beale"))
     social_welfare, actions_dim = sw.fun, sw.input_dim
