@@ -1,0 +1,22 @@
+# @package _global_
+
+defaults:
+  - default
+  - _self_
+
+seed: 42
+
+reward_type: tw
+learning_algorithm: oracle
+
+kernel_type: gaussian
+
+horizon: 30
+
+hydra:
+    mode: MULTIRUN
+    sweeper:
+        params:
+          RKHS_bound: 6, 8, 10
+          kernel_lengthscale: 2.5, 4, 5
+          beta: 8e-3, 5e-2, 5e-1

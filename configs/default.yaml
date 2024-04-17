@@ -11,6 +11,7 @@ learning_algorithm: oracle
 
 # Type of the kernel used for Bayesian optimization (linear, exponential, gaussian or matern)
 kernel_type: gaussian
+kernel_lengthscale: 2
 
 RKHS_bound: 0.2
 beta: 2
