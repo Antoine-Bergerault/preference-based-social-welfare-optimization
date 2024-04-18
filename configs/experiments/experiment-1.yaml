@@ -6,17 +6,23 @@ defaults:
 
 seed: 42
 
+social_welfare_function: stack_exchange
 reward_type: tw
 learning_algorithm: oracle
 
 kernel_type: gaussian
 
-horizon: 30
+horizon: 15
+
+report_add_graphs: True
+
+# Params
+RKHS_bound: ${jobs_config.RKHS_bound}
+kernel_lengthscale: ${jobs_config.kernel_lengthscale}
+beta: ${jobs_config.beta}
 
 hydra:
     mode: MULTIRUN
     sweeper:
         params:
-          RKHS_bound: 6, 8, 10
-          kernel_lengthscale: 2.5, 4, 5
-          beta: 8e-3, 5e-2, 5e-1
+          +jobs_config: "{RKHS_bound: 10, kernel_lengthscale: 5, beta: 0.05}, {RKHS_bound: 10, kernel_lengthscale: 2.5, beta: 0.008}, {RKHS_bound: 10, kernel_lengthscale: 5, beta: 0.008}, {RKHS_bound: 6, kernel_lengthscale: 4, beta: 0.008}, {RKHS_bound: 6, kernel_lengthscale: 2.5, beta: 0.008}"
