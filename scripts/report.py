@@ -7,7 +7,9 @@ import csv
 import os
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import plotly.express as px
 
 from pref import pref_social_welfare
 
@@ -15,17 +17,21 @@ def run_and_store_results(cfg: DictConfig, output_dir):
     csv_output = output_dir / "results.csv"
     
     t = 0
+    ucb_rewards_hist = []
     rewards_hist = []
     preferences = 0
     
     for (s_ucb, actions, ucb_rewards, rewards, preference) in pref_social_welfare(cfg, generator=True):
         t += 1
+        ucb_rewards_hist.append(ucb_rewards)
         rewards_hist.append(rewards)
         preferences += preference
     
     results = pd.Series({
         "time_to_convergence": t,
-        "preference_ratio": preferences / t
+        "preference_ratio": preferences / t,
+        "rewards_hist": rewards_hist,
+        "ucb_rewards_hist": rewards_hist
     })
     
     results.to_csv(csv_output)
@@ -34,15 +40,27 @@ def run_and_store_results(cfg: DictConfig, output_dir):
 
 def load_and_compare_results(hydra_config, cfg: DictConfig, output_dir, results: pd.Series, comparisons_dir):
     keys = list(hydra_config.sweeper["params"].keys())
+    
+    # add keys where no cross-product over parameters is needed
+    if "+jobs_config" in keys:
+        other_keys = list(cfg["jobs_config"].keys())
+        keys.remove("+jobs_config")
+        keys += other_keys
+        
     run_fingerprint = {key: cfg[key] for key in keys}
+    
+    report_graph = cfg.get("report_add_graphs", True)
     
     # few files describing the results of the entire experiment
     registry_file = comparisons_dir / "registry.csv"
     all_results_file = comparisons_dir / "all_results.pkl"
     latex_table_file = comparisons_dir / "latex_table.tex"
+    graphs_dir = comparisons_dir / "graph"
     
     lower_is_better_cols = ["time_to_convergence"]
     higher_is_better_cols = ["preference_ratio"]
+    
+    graph_cols = ["rewards_hist", "ucb_rewards_hist"]
     
     if not os.path.isfile(registry_file):
         with open(registry_file, 'w', newline='') as file:
@@ -50,6 +68,9 @@ def load_and_compare_results(hydra_config, cfg: DictConfig, output_dir, results:
             fields = keys + ["output_dir"]
             
             writer.writerow(fields)
+        
+        if report_graph:
+            Path(graphs_dir).mkdir(parents=True, exist_ok=False)
            
     with open(registry_file, 'a', newline='') as file:
         writer = csv.writer(file)
@@ -73,10 +94,34 @@ def load_and_compare_results(hydra_config, cfg: DictConfig, output_dir, results:
     
     with open(latex_table_file, "w", newline='') as file:
         file.write(comparisons.to_latex(
-            index=False, 
+            index=report_graph, # add index so we can refer to indices in the graphs 
             na_rep="-",
             float_format="%.2f"
         ))
+
+    if report_graph:
+        for col in graph_cols:
+            graph_groups = all_results[col]
+            
+            graph_data = None
+            for index, run_data in graph_groups.items():
+                horizon = len(run_data)
+                # the x-axis always represents the turns/time
+                x = np.arange(horizon)
+                
+                group_df = pd.DataFrame({
+                    "index": [index]*horizon,
+                    "turn": x,
+                    col: run_data
+                })
+                
+                if graph_data is None:
+                    graph_data = group_df
+                else:
+                    graph_data = pd.concat([graph_data, group_df], ignore_index=True)
+            
+            fig = px.line(graph_data, x="turn", y=col, color="index", title=f"{col} through time")
+            fig.write_image(graphs_dir / f"{col}.png")
 
 @hydra.main(version_base=None, config_path="../configs", config_name="default")
 def my_app(cfg: DictConfig) -> None:
