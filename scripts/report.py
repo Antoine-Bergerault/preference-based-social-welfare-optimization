@@ -14,24 +14,40 @@ import plotly.express as px
 from pref import pref_social_welfare
 
 def run_and_store_results(cfg: DictConfig, output_dir):
-    csv_output = output_dir / "results.csv"
+    if isinstance(output_dir, str):
+        csv_output = output_dir + "/results.csv"
+    else:
+        csv_output = output_dir / "results.csv"
     
     t = 0
     ucb_rewards_hist = []
     rewards_hist = []
+    deltas = []
     preferences = 0
+    
+    time_to_convergence = 0
     
     for (s_ucb, actions, ucb_rewards, rewards, preference) in pref_social_welfare(cfg, generator=True):
         t += 1
         ucb_rewards_hist.append(ucb_rewards)
+        if t > 1:
+            delta = rewards - rewards_hist[-1]
+        else:
+            delta = rewards
+        deltas.append(delta)
         rewards_hist.append(rewards)
         preferences += preference
+        
+        if delta > 1e-1:
+            time_to_convergence = t
     
     results = pd.Series({
-        "time_to_convergence": t,
+        "horizon": t,
+        "time_to_convergence": time_to_convergence,
         "preference_ratio": preferences / t,
         "rewards_hist": rewards_hist,
-        "ucb_rewards_hist": rewards_hist
+        "best_reward": max(rewards_hist),
+        "ucb_rewards_hist": ucb_rewards_hist
     })
     
     results.to_csv(csv_output)
@@ -58,7 +74,7 @@ def load_and_compare_results(hydra_config, cfg: DictConfig, output_dir, results:
     graphs_dir = comparisons_dir / "graph"
     
     lower_is_better_cols = ["time_to_convergence"]
-    higher_is_better_cols = ["preference_ratio"]
+    higher_is_better_cols = ["preference_ratio", "best_reward"]
     
     graph_cols = ["rewards_hist", "ucb_rewards_hist"]
     
