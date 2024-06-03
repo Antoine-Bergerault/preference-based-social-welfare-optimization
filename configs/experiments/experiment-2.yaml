@@ -5,5 +5,5 @@ defaults:
   - _self_
 
 reward_type: tw
-learning_algorithm: oracle
-marginal_ucb: False
+learning_algorithm: mw
+marginal_ucb: True

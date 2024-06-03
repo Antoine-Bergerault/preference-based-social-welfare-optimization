@@ -27,6 +27,10 @@ def stack_exchange(x):
 def eggholder(x):
     x_1, x_2 = x[0], x[1]
     
+    # change range of function, usually evaluated in a square 512x512
+    ##x_1 = x_1 * 512/12
+    ##x_2 = x_2 * 512/12
+    
     return -(x_2 + 47) * sin(sqrt(abs(x_2 + x_1/2 + 47))) - x_1 * sin(sqrt(abs(x_1 - (x_2 + 47))))
 
 @define_social_welfare_function("cross_in_tray", input_dim=2)

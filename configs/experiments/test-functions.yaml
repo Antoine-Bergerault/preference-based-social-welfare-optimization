@@ -1,0 +1,28 @@
+# @package _global_
+
+defaults:
+  - /default
+  - _self_
+
+seed: 42
+
+reward_type: ???
+learning_algorithm: ???
+
+kernel_type: gaussian
+
+horizon: 15
+
+report_add_graphs: True
+
+# Params
+social_welfare_function: ${jobs_config.social_welfare_function}
+RKHS_bound: ${jobs_config.RKHS_bound}
+kernel_lengthscale: ${jobs_config.kernel_lengthscale}
+beta: ${jobs_config.beta}
+
+hydra:
+    mode: MULTIRUN
+    sweeper:
+        params:
+          +jobs_config: "{social_welfare_function: bukin, RKHS_bound: 4, beta: 0.008, kernel_lengthscale: 4}, {social_welfare_function: cross_in_tray, RKHS_bound: 8, beta: 0.008, kernel_lengthscale: 4}, {social_welfare_function: eggholder, RKHS_bound: 4, beta: 0.008, kernel_lengthscale: 4}, {social_welfare_function: beale, RKHS_bound: 8, beta: 0.008, kernel_lengthscale: 4}"
