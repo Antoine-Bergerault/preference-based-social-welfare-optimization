@@ -38,7 +38,7 @@ def beta1(t, confidence_set):
     beta = confidence_set.beta
     return beta * sqrt(t+1)
 
-def ucb_function(confidence_set: Ball):
+def ucb_function(confidence_set: Ball, i, marginal=False):
     x_hist = confidence_set.hist_data
     
     pref_hist = confidence_set.pref_data
@@ -68,10 +68,6 @@ def ucb_function(confidence_set: Ball):
         z = opti.variable()
         
         z_plus = vertcat(z_hist, z)
-
-        objective = z - z_hist[-1]
-
-        opti.minimize(-objective) # maximize objective
         
         matrix_inv = opti.parameter(t+1, t+1)
         opti.set_value(matrix_inv, DM(np.linalg.inv(K_0x + lambda_ * np.identity(t+1))))
@@ -80,6 +76,18 @@ def ucb_function(confidence_set: Ball):
         
         opti.subject_to(log_likelihood(z_hist, pref_hist) >= log_likelihood_MLE - beta1_t)
 
+        if marginal:
+            # maximizing the optimistic marginal contribution
+            masked_x = np.array(x)
+            masked_x[i] = 0
+            D = matrix_inv @ k(np.vstack([x_hist, np.array(x)]), masked_x[None, ...])
+            objective = z - z_plus.T @ D
+        else:
+            # corresponding to classical preferential bayesian optimization
+            objective = z - z_hist[-1]
+
+        opti.minimize(-objective) # maximize objective
+        
         # Silent ipopt solver
         opts = {'ipopt.print_level': 0, 'print_time': 0}
         opti.solver('ipopt', opts)

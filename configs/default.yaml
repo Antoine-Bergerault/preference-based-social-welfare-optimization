@@ -19,3 +19,4 @@ beta: 2
 horizon: 30
 
 learn_utilities: False
+marginal_ucb: False

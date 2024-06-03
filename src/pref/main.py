@@ -76,7 +76,10 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
     for t in range(T):
         # find next point to query
         
-        s_ucb = ucb_function(confidence_set)
+        s_ucb = [
+            ucb_function(confidence_set, i=i, marginal=config.get("marginal_ucb", False))
+            for i in range(input_dim)
+        ]
         
         # define rewards from ucb
         
@@ -86,11 +89,11 @@ def pref_social_welfare_generator(config: Union[DictConfig, Dict]):
         else:
             utilities = s_ucb
 
-        reward_function = reward_type(utilities)
+        reward_functions = reward_type(utilities)
         
         # run the rational agents
         
-        actions, ucb_rewards = learning_algorithm(reward_function, actions_dim)
+        actions, ucb_rewards = learning_algorithm(reward_functions, actions_dim)
         
         # measure preference
         
