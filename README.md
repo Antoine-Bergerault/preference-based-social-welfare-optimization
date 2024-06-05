@@ -1,5 +1,7 @@
 # Sycamore project
 
+This repository contains the code for a semester research project done with the [Sycamore](https://www.epfl.ch/labs/sycamore/) lab at EPFL. The report for the project can be found [here](#).
+
 ## Configuring the environment
 
 Run the following
