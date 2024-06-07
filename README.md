@@ -1,6 +1,7 @@
-# Sycamore project
+# Preference-based social welfare optimization
 
 This repository contains the code for a semester research project done with the [Sycamore](https://www.epfl.ch/labs/sycamore/) lab at EPFL. The report for the project can be found [here](https://github.com/Antoine-Bergerault/preference-based-social-welfare-optimization/blob/main/report.pdf).
+We tackle the problem of the decentralized optimization of a global objective by combining mechanism design and preferential bayesian optimization.
 
 ## Configuring the environment
 
